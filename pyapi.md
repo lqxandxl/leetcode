@@ -29,6 +29,10 @@ str.split('x')  以x为分隔符 分割为数组
 
 要用a = list(b)这样的操作。
 
+### 列表生成器
+
+[x * x for x in range(1, 11)]
+
 
 ## None
 
@@ -42,3 +46,39 @@ python中很多意想不到的错误都是None导致的。
 / 不是向下取整
 
 // 是向下取整
+
+取余 使用x&1 加快速度
+
+
+## 基本方法
+
+max
+
+## 最大值
+
+float('inf')
+
+
+## 语法
+
+内置函数想要访问外置变量，需要在内部函数内强调nonlocal。
+
+没有关键字的时候
+```
+a = 10  # a1 当前模块全局变量
+def outer():
+    a = 9  # a2 当前outter作用域局部变量
+    def inner():
+        a = 8  # a3 当前inner作用域局部变量
+        print(a)  # a3 8, 在inner的局部作用域中找到了a3
+    inner()  # inner()函数结束，a3作为inner局部变量被释放
+    print(a)  # a2 9,在outer局部作用域中找到a2
+outer()  # outer()函数结束，a2作为outer局部变量被释放
+print(a)  # a1 10, 在当前模块全局作用域中找到了a1
+```
+
+nonlocal的作用是找外层定义，但不找全局，即找到最外层函数为止。
+
+global是直接和最外层定义的全局变量相关联，不是外层定义的变量。
+
+
