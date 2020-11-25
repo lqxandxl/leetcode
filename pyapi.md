@@ -82,3 +82,6 @@ nonlocal的作用是找外层定义，但不找全局，即找到最外层函数
 global是直接和最外层定义的全局变量相关联，不是外层定义的变量。
 
 
+参考链接：
+https://blog.csdn.net/qw_sunny/article/details/80972357
+
