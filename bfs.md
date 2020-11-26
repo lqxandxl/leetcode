@@ -69,3 +69,45 @@ class Solution:
 
 
 ## bfs做法
+
+list就能当队列使用。bfs的关键词在于队列。
+
+```
+class Solution:
+    def solve(self, board: List[List[str]]) -> None:
+        """
+        Do not return anything, modify board in-place instead.
+        """
+        row=-1
+        col=-1
+        if board == None:
+            return
+        row = len(board)
+        if row==0:
+            return
+        col = len(board[0])
+        q=[]
+        for index in range(0,col):
+            q.append([0,index])
+            q.append([row-1,index])
+        for index in range(0,row):
+            q.append([index,0])
+            q.append([index,col-1])
+        while len(q)!=0:
+            l=list(q[0])
+            q.pop(0)
+            if l[0]>=0 and l[0]<=row-1 and l[1]>=0 and l[1]<=col-1:
+                if board[l[0]][l[1]]=='O':
+                    board[l[0]][l[1]]='Z'
+                    q.append([l[0]-1,l[1]])
+                    q.append([l[0]+1,l[1]])
+                    q.append([l[0],l[1]+1])
+                    q.append([l[0],l[1]-1])
+        for i in range(0,row):
+            for j in range(0,col):
+                if board[i][j]=='Z':
+                    board[i][j]='O'
+                elif board[i][j]=='O':
+                    board[i][j]='X'
+        return
+```
