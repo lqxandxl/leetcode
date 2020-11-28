@@ -85,3 +85,23 @@ global是直接和最外层定义的全局变量相关联，不是外层定义�
 参考链接：
 https://blog.csdn.net/qw_sunny/article/details/80972357
 
+
+## str
+
+python的str
+
+比如 s = 'abc'
+
+我们不能通过s[0]修改原值。
+
+a = s[0]
+
+可以对a进行修改，因为a和原先的s已经没有关系了，str在python中目前来看很像基本类型。
+
+## 排序
+
+s1 = ''.join(sorted(s))  
+这样的排序不会对s造成影响
+
+
+

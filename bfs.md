@@ -111,3 +111,57 @@ class Solution:
                     board[i][j]='X'
         return
 ```
+
+
+# [102] 二叉树的层序遍历
+```
+给你一个二叉树，请你返回其按 层序遍历 得到的节点值。 （即逐层地，从左到右访问所有节点）。
+
+示例：
+二叉树：[3,9,20,null,null,15,7],
+
+    3
+   / \
+  9  20
+    /  \
+   15   7
+返回其层次遍历结果：
+
+[
+  [3],
+  [9,20],
+  [15,7]
+]
+
+```
+
+二叉树的层序遍历，使用list充当队列。
+因为输出的关系，需要存储每一个结点所在的层数，方便输出到最后结果。
+
+```
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+class Solution:
+    def levelOrder(self, root: TreeNode) -> List[List[int]]:
+        q = []
+        if root == None:
+            return []
+        q.append([root,1])
+        res=[]
+        while len(q)!=0:
+            node = q[0]
+            if node[1]>len(res):
+                res.append([node[0].val])
+            else:
+                res[node[1]-1].append(node[0].val)
+            if node[0].left!=None:
+                q.append([node[0].left,node[1]+1])
+            if node[0].right!=None:
+                q.append([node[0].right,node[1]+1])
+            q.pop(0)
+        return res
+```
