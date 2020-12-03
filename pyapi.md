@@ -116,7 +116,38 @@ s[:3]+x+s[4:] #相当于用x替换了坐标为3的字符
 s1 = ''.join(sorted(s))  
 这样的排序不会对s造成影响
 
+高级排序：
+sorted(s,cmp,key,reverse)
+L.sort(cmp,key,reverse)
+
+key的作用是比较的关键字
+
+```
+student = [['Tom', 'A', 20], ['Jack', 'C', 18], ['Andy', 'B', 11]]
+student.sort(key=lambda student: student[2])
+
+//按成绩由小到大进行了排序。
+
+student = [['Tom', 'A', 20], ['Jack', 'C', 18], ['Andy', 'B', 11]]
+student.sort(cmp=lambda x, y: x[2] - y[2])
+
+//使用cmp达到一样的效果。
+
+//sorted的适用范围非常广，不仅仅是数组。
+```
+
 假如一个长度为2的数组的数组需要排序，但是第一个数要降序，如果第一个数字相同，第二个数字升序排列。这种情况下该如何排序呢？
+
+```
+L.sort(key=lambda x:(x[0],-x[1])) //后面返回括号的形式就是比较第一个相同时再比较第二个。
+```
+## lambda
+
+g = lambda x:x+1
+表示定义了函数g。收到x返回x+1。
+
+lambda x:x+1(1) 表示 2
+
 
 
 
