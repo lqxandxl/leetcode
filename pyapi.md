@@ -162,3 +162,8 @@ for index in range(0,len(s)):
 ```
 
 
+## 26个字母生成
+L= [chr(i) for i in range(97, 123)]
+
+ord是反过来。
+
