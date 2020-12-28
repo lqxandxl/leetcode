@@ -165,3 +165,62 @@ class Solution:
             q.pop(0)
         return res
 ```
+
+
+# [542] 01矩阵
+```
+给定一个由 0 和 1 组成的矩阵，找出每个元素到最近的 0 的距离。
+
+两个相邻元素间的距离为 1 。
+
+输入：
+[[0,0,0],
+ [0,1,0],
+ [1,1,1]]
+
+输出：
+[[0,0,0],
+ [0,1,0],
+ [1,2,1]]
+
+```
+
+这道题把所有的0都放入队列。然后进行bfs，并且记层数。经过上下左右遍历，总是能够遍历全部的点。
+
+注意同一visit层数时，遍历后需要及时改变状态，防止我们在同一层中重复的遍历和放入队列，导致错误。
+
+利用一上来计算size，并且循环内部size递减来实现正确的计数。
+
+这个是标准的bfs解法和模板。
+
+```
+class Solution:
+    def updateMatrix(self, matrix: List[List[int]]) -> List[List[int]]:
+        row = len(matrix)
+        col = len(matrix[0])
+        b = []
+        for i in range(0,row):
+            b.append([-1 for j in range(0,col)])
+        q=[]
+        for i in range(0,row):
+            for j in range(0,col):
+                if matrix[i][j]==0:
+                    b[i][j]=0
+                    q.append([i,j])
+        visit=0
+        while len(q)!=0:
+            size = len(q)
+            while size!=0:
+                index = q[0]
+                q.pop(0)
+                b[index[0]][index[1]]=visit
+                for x,y in [[0,-1],[0,1],[1,0],[-1,0]]:
+                    newx=index[0]+x
+                    newy=index[1]+y
+                    if 0<=newx<=row-1 and 0<=newy<=col-1 and b[newx][newy]==-1:
+                        b[newx][newy] = -2
+                        q.append([newx,newy])
+                size=size-1
+            visit+=1
+        return b
+```
