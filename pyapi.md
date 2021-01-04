@@ -50,7 +50,17 @@ python中很多意想不到的错误都是None导致的。
 
 // 是向下取整
 
-取余 使用x&1 加快速度
+取余 %
+
+## 数学
+
+平方 x**2
+
+开平方 x**0.5
+
+向上取整 math.ceil(x)
+
+向下取整 math.floor(x)
 
 
 ## 基本方法
@@ -160,6 +170,11 @@ lambda x:x+1(1) 表示 2
 for index in range(0,len(s)):
     dp.append([-2 for j in range(0,len(s))])
 ```
+
+数组翻转
+
+x.reverse()
+
 
 
 ## 26个字母生成
