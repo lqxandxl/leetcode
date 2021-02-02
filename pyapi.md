@@ -182,3 +182,17 @@ L= [chr(i) for i in range(97, 123)]
 
 ord是反过来。
 
+
+
+## list操作
+
+添加元素： 
+
+append //末尾
+
+insert(index,x)
+
+删除：
+
+pop(index)
+
