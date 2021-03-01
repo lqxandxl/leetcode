@@ -107,6 +107,8 @@ int[] res = new int[2]; //初始化
 
 nums.length 求长度
 
+Arrays.sort(nums); //数组的排序
+
 ## python
 
 用List进行替代
@@ -142,7 +144,7 @@ String 是否可以修改单个内容？如何修改？
 
 String str
 
-str.charAt(i) //取值
+str.charAt(i) //取值 得 Character
 
 
 
@@ -164,6 +166,9 @@ String str = String.valueOf(a);
 String --> Integer
 
 Integer i = Integer.valueOf(str);
+
+求长度：
+s.length
 
 
 ## python
@@ -301,6 +306,7 @@ a.remove(index)
 
 a.set(index,x)
 
+排序 Collections.sort(list)
 
 
 ## 集合
