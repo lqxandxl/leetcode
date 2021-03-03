@@ -453,3 +453,278 @@ class Solution {
     }
 }
 ```
+
+# [21] 合并两个有序链表
+```
+class Solution {
+    public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
+        if(l1==null && l2==null){
+            return null;
+        }
+        if(l1==null || l2==null){
+            if(l1==null)
+                return l2;
+            if(l2==null)
+                return l1;
+        }
+        List<Integer> list = new ArrayList<>();
+        while(l1!=null){
+            list.add(l1.val);
+            l1=l1.next;
+        }
+        while(l2!=null){
+            list.add(l2.val);
+            l2=l2.next;
+        }
+        Collections.sort(list); //排序
+        ListNode root=null;
+        ListNode cur = null;
+        for(Integer i: list){
+            if(root==null){
+                root = new ListNode(i);
+                cur = root;
+            }
+            else{
+                ListNode tmp = new ListNode(i);
+                cur.next = tmp;
+                cur = tmp;
+            }
+        }
+        return root;
+    }
+}
+```
+
+# [22]括号生成
+1,static变量无法在leetcode刷题时保证正确性。会覆盖之前的结果。实际上leetcode肯定是不断运行此函数，所以static变量需要在函数之初进行初始化。
+
+2,回溯实际上也是dfs，dfs的过程中需要存储中间结果，且可以回退状态。这道题实际上就是dfs，下面的解并没有回退状态。只是记录了不合法的状态是右括号多于左括号。或者左括号数量太多。
+
+```
+class Solution {
+    //static变量无法在leetcode刷题时保证正确性
+    public static int _num = 0;
+    public static List<String> _res = new ArrayList<>(); 
+    public List<String> generateParenthesis(int n) {
+        _num = n;
+        _res.clear();//clear
+        dfs(0,0,"");
+        return _res;
+    }
+    public void dfs(int left,int right,String path){
+        if(right>left){
+            return;
+        }
+        if(left>_num){
+            return;
+        }
+        if(path.length()==_num*2 && left == right){
+            _res.add(path);
+            return;
+        }
+        else if(path.length()>=_num*2){
+            return;
+        }
+        dfs(left+1,right,path+"(");
+        dfs(left,right+1,path+")");
+    }
+}
+```
+
+# [31] 下一个排序
+1,掌握reverse的实现办法。
+
+2，Comparator只能对Integer生效而不是int。所以这里不能考虑Comparator。
+
+3，这道题的核心关键是从后往前找到第一个顺序对。假如a[i]小于a[j] ，证明a[j]到数组的最后都是逆序。
+
+这个时候将a[i]和后面的逆序数组中仅仅比a[i]大一点点的数字交换。交换后后序从a[j]到最后依然是逆序数组，这个时候进行reverse操作将后面的数组变成顺序数组即可。
+
+4，特殊情况：全顺序数组，这个其实一上来就是顺序对，直接交换即可。全逆序数组，也就是找不到顺序对，那么直接reverse操作即可。
+
+```
+class Solution {
+    public void nextPermutation(int[] nums) {
+        int pre=nums.length-2;
+        int cur=nums.length-1;
+        //find a[pre]<a[cur]
+        while(pre>=0 && nums[pre]>=nums[cur]){
+            pre--;
+            cur--;
+        }
+        if(pre>=0){ //find
+            //从pre后面找一个合适的数字和pre进行交换，刚好比pre大一点点即可
+            int k = nums.length - 1;
+            while(nums[k]<=nums[pre]){
+                k--;
+            }
+            //swap k,pre
+            int tmp = nums[k];
+            nums[k] = nums[pre];
+            nums[pre] = tmp;
+        }
+        //交换后的后面的内容进行顺序排序 交换后必然是逆序 reverse cur-->end
+        int i=cur;
+        int j=nums.length-1;
+        while(i<j){
+            int tmp = nums[i];
+            nums[i] = nums[j];
+            nums[j] = tmp;            
+            i++;
+            j--;
+        }
+    }
+}
+```
+
+
+# [33] 搜索旋转数组
+
+这道题也是做了很多次，每做一次就忘记一次。
+
+二分查找的过程在于准确的扔下一半的数据。
+
+对于旋转排序数组，切一刀，肯定一半是有序的。（如何判断数组是有序的成为了关键，给出的数组是有序数组只不过被切分了）
+
+在这两个前提下，我们优先找有序的一半并且在这一半里看看是不是target在里面。如果不在那只能去找无序的另一半（可以肯定就在另一半里了）。
+
+所以算法的思路就是： 先确定有序的这一段，有序的里面可以快速判断有没有target，从而快速知道target在我们划分的哪一段里。这是保证正确性的关键。
+
+```
+class Solution {
+    public int search(int[] nums, int target) {
+        int left = 0;
+        int right = nums.length-1;
+        while(left<=right){
+            int mid = left + (right-left)/2;
+            if(nums[mid]==target){
+                return mid;
+            }
+            else if(nums[left]<=nums[mid]){ //左边有序
+                if(target>=nums[left] && target<=nums[mid]){
+                    right = mid-1; //如果target在有序的里面就在有序的里面去找
+                }
+                else{
+                    left = mid+1;//不在那肯定在另一半里
+                }
+            }
+            else if(nums[mid]<=nums[right]){ //右边有序
+                if(target>=nums[mid] && target<=nums[right]){
+                    left = mid+1;
+                }
+                else{
+                    right = mid-1;
+                }
+            }
+        }
+
+        return -1;
+
+    }
+}
+```
+
+
+# [34] 查找一个元素的区间范围 (二分查找经典题目)
+
+1,首先要确定是否存在该数字。
+
+2，其次是找到上边界和下边界。
+
+二分查找的一些思路：
+
+首先是循环不变量的两种形态。
+
+```left<=right```这种形态，代表了left可以==right，搜索的区间可以搜到right，因此是左闭右闭的搜索。那么移动的时候就要mid=left+1和mid=right-1。 退出循环时left>right。
+
+```left<right```这种形态代表了left==right时就要退出循环，代表了左闭右开的区间，因为left永远不能等于right，从而判断right位置的值。因此移动的时候left=mid+1，right=mid（此处需要记忆）。
+
+```
+class Solution {
+    public int[] searchRange(int[] nums, int target) {
+        int left = 0;
+        int right = nums.length-1;
+        int find = 0;
+        //先确定是否存在
+        while(left<=right){ //[]
+            int mid = left + (right-left)/2;
+            if(nums[mid]==target){
+                find=1;
+                break;
+            }
+            else if(nums[mid]<target){
+                left = mid+1;
+            }
+            else{
+                right = mid-1;
+            }
+        }
+        if(find==0){
+            return new int[]{-1,-1};
+        }
+        //找上边界
+        left=0;
+        right=nums.length-1;
+        int up=-1;
+        while(left<=right){
+            int mid = left + (right-left)/2;
+            if(nums[mid]==target){
+                left++; //为了找到上边界 left不断递增 （如何证明right一定<=数字的上边界以防止left++提前退出导致漏解？）
+            }
+            else if(nums[mid]<target){
+                left = mid+1;
+            }
+            else{
+                right = mid-1;
+            }
+        }
+        up = left;
+        //找下边界
+        left=0;
+        right=nums.length-1;
+        int down=-1;
+        while(left<=right){
+            int mid = left + (right-left)/2;
+            if(nums[mid]==target){
+                right--; //为了找到下边界 right不断递减
+            }
+            else if(nums[mid]<target){
+                left = mid+1;
+            }
+            else{
+                right = mid-1;
+            }
+        }
+        down = right;  
+        return new int[]{down+1,up-1};      
+    }
+}
+```
+
+# [39] 组合总和
+不允许结果重复，意味着递归时需要知道自己的起点。
+递归的同时也需要缓存中间结果。
+
+```
+class Solution {
+    public List<List<Integer>> combinationSum(int[] candidates, int target) {
+        List<List<Integer>> res = new ArrayList<>();
+        dfs(target,new ArrayList<Integer>(),0,res,candidates);
+        return res;
+
+    }
+    public void dfs(int target,ArrayList<Integer> path,int start,List<List<Integer>> res,int[] candidates){
+        if(target==0){
+            res.add((List<Integer>)path.clone()); //只有ArrayList有clone方法，clone是浅拷贝，也就是Integer还是那个Integer
+            return;
+        }
+        if(target<0)
+            return;
+        for(int i=start;i<candidates.length;++i){
+            ArrayList<Integer> tmp =(ArrayList<Integer>)path.clone(); //clone返回时Object，需要对引用进行类型转化。
+            tmp.add(candidates[i]);
+            dfs(target-candidates[i],tmp,i,res,candidates); //传入为i是最关键的一步
+        }
+    }
+}
+```
