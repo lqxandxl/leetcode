@@ -728,3 +728,124 @@ class Solution {
     }
 }
 ```
+
+
+# [42] 接雨水 （数组、双指针）
+
+思路是从左往右扫描一次，从右往左扫描一次。
+
+定理一： 能接的雨水取决于左侧出现过的最大值，右侧出现过的最大值，两个值的最小值 - 自己本身的高度 就是自己能承载的雨水。
+
+定理二： 从左边开始扫描的时候，可以确定左边的最大值，但是不能确定右边的最大值。
+
+从左扫描一遍，从右扫描一遍，且记录下左侧or右侧最大值-自己的高度。那么综合来看就满足了定理一，可以推断出能接的雨水。
+
+能否想起来定理一是解这道题的关键所在。
+```
+class Solution {
+    public int trap(int[] height) {
+        int nums_len = height.length;
+        int [] left_nums = new int[nums_len];
+        int [] right_nums = new int[nums_len];
+        //left
+        int left_max = 0;
+        for(int i=0;i<nums_len;++i){
+            if(height[i]>left_max){
+                left_max = height[i];
+                left_nums[i]=0;
+            }
+            else{
+                left_nums[i]=left_max - height[i];
+            }
+        }
+        //right
+        int right_max =0;
+        for(int i=nums_len-1;i>=0;--i){
+            if(height[i]>right_max){
+                right_max = height[i];
+                right_nums[i]=0;
+            }
+            else{
+                right_nums[i]=right_max - height[i];
+            }
+        }
+        int res=0;
+        for(int i=0;i<nums_len;++i){
+            res += Math.min(left_nums[i],right_nums[i]);
+        }
+        return res;
+    }
+}
+```
+
+
+# [46] 全排列 （经典回溯问题）
+
+回溯问题一定要画图。做到心中有图。dfs时需要保存路径，保存剩余内容（知道自己遍历到哪里了）。
+
+dfs还原现场需要保存原先的值。
+
+```
+
+class Solution {
+    public static List<List<Integer>> res = new ArrayList<>(); //static的使用
+    public List<List<Integer>> permute(int[] nums) {
+        res.clear();
+        ArrayList<Integer> remain = new ArrayList<>();
+        for(int num:nums){
+            remain.add(num);
+        }
+        ArrayList<Integer> path = new ArrayList<>();
+        dfs(remain,path);
+        return res;
+    }
+    public void dfs(ArrayList<Integer> remain,ArrayList<Integer> path){
+        if(remain.size()==0){
+            res.add( (ArrayList)(path.clone()) ); //clone的使用
+            return;
+        }
+        for(int i=0;i<remain.size();++i){
+            int tmp = remain.get(i);
+            path.add(tmp);
+            remain.remove(i);
+            dfs(remain,path);
+            remain.add(i,tmp); //还原现场
+            path.remove(path.size()-1);
+        }
+    }
+}
+
+```
+
+# [48] 旋转图像
+
+首先使用矩阵转置，其次列列对称交换。 其实就是矩阵找规律的题目。多用用转置和交换等等。
+
+```
+class Solution {
+    public void rotate(int[][] matrix) {
+        int row = matrix.length;
+        if(row==0){
+            return;
+        }
+        int col = matrix[0].length;
+        //转置
+        //(i,j) <--> (j,i)
+        for(int i=0;i<row;++i){
+            for(int j=i;j<col;++j){
+                int tmp = matrix[i][j];
+                matrix[i][j] = matrix[j][i];
+                matrix[j][i] = tmp;
+            }
+        }
+        //对称列交换
+        for(int j=0;j<col/2;++j){
+            for(int i=0;i<row;++i){
+                int tmp = matrix[i][j];
+                matrix[i][j] = matrix[i][col-j-1];
+                matrix[i][col-j-1] = tmp;
+            }
+        }
+    }
+}
+```
