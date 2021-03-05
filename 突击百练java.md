@@ -849,3 +849,120 @@ class Solution {
     }
 }
 ```
+
+# [49] 字母异位词分组
+
+将具备相同字母的字符串进行分组。需要使用字典。key为排序后字符串，value为下属字符串。
+```
+class Solution {
+    public List<List<String>> groupAnagrams(String[] strs) {
+        Map<String,List<String> > dict = new HashMap<>();
+        List<List<String>> res = new ArrayList<>();
+        for(String s:strs){
+            String key = keyOfWord(s);
+            if(dict.containsKey(key)){
+                List<String> list = dict.get(key);
+                list.add(s);
+            }
+            else{
+                List<String> list = new ArrayList<>();
+                list.add(s);
+                dict.put(key,list);
+            }
+        }
+        //iterator map
+        for(Map.Entry<String,List<String>> entry:dict.entrySet()){
+            res.add(entry.getValue());
+        }
+        return res;
+    }
+    public String keyOfWord(String str){
+        String key = null;
+        char[] array = str.toCharArray(); //String to char[]
+        Arrays.sort(array);
+        key = String.valueOf(array); //char[] to String
+        return key;
+    }
+}
+```
+
+# [53] 最大子序和
+
+dp数组存储每个阶段的最大子序和。令人困惑的点在于，这个最大子序和dp[i]是否一定要包含nums[i]。
+
+dp数组存储了每个阶段的结果，为了方便理解，应该规定dp必须存储当前位置的数字。1...i-1的dp为-10，i为-9 or -11。dp[i]应该是包含nums[i]的。
+
+负数不给后面的计算提供借鉴。
+```
+
+class Solution {
+    public int maxSubArray(int[] nums) {
+        int nums_len = nums.length;
+        int[] dp = new int[nums_len];
+        int max = 0x80000000;
+        for(int i =0;i<nums.length;++i){
+            if(i==0){
+                dp[i] = nums[i];
+            }
+            else{
+                if(dp[i-1]>0){
+                    dp[i] = dp[i-1] + nums[i];
+                }
+                else{
+                    dp[i] = Math.max(nums[i],dp[i-1]); //这里直接等于nums[i]也可以通过编译
+                }
+            }
+            if(dp[i]>max){
+                max = dp[i];
+            }
+        }
+        return max;
+    }
+}
+
+```
+
+# [55] 跳跃游戏
+
+dp数组确定每一个位置能否到达终点。这样可以避免很多子问题的重复计算，避免超时。
+
+dp[index] = true ; 表示从index的位置是可以到达终点的。
+
+```
+class Solution {
+    static int[] _nums;
+    static int[] _dp;
+    public boolean canJump(int[] nums) {
+        _nums = nums;
+        _dp = new int[nums.length];
+        return dfs(0);
+    }
+    public boolean dfs(int index){
+        if(index >= _nums.length-1){
+            return true;
+        }
+        if(_dp[index]!=0){ //利用缓存避免多余的递归
+            if(_dp[index]==1){
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
+        if(_nums[index]==0){ //为0代表无法到达终点
+            _dp[index]=-1;
+            return false;
+        }
+        int step = _nums[index];
+        boolean res=false;
+        for(int i=1;i<=step;++i){
+            res = res|dfs(index+i); //单|避免截断
+        }
+        if(res==true)
+            _dp[index]=1;
+        else
+            _dp[index]=-1;
+        return res;
+    }
+}
+```
