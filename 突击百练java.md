@@ -966,3 +966,149 @@ class Solution {
     }
 }
 ```
+
+# [56] 合并区间
+
+合并区间是一道很锻炼人的题目，其中涉及了二维数组的排序，二维数组和List之间的转化。
+List在迭代过程中的删除之后的变化等等。
+
+思路就是合并一次后重新遍历整个数组，如果有重复就再次合并，直到没有重复为止。
+
+```
+class Solution {
+    public int[][] merge(int[][] intervals) {
+        int count=0;
+        int[][] res=null;
+        Arrays.sort(intervals,new Comparator<int[]>(){
+            @Override //考场上不写这个也行
+            public int compare(int[] o1,int []o2){
+                if(o1[0]==o2[0]) return o1[1]-o2[1];
+                return o1[0]-o2[0];
+            }
+        });
+        List<List<Integer>> cur = new ArrayList<>();
+        for(int i=0;i<intervals.length;++i){
+            List<Integer> tmp = new ArrayList<>();
+            for(int j=0;j<intervals[0].length;++j){
+                tmp.add(intervals[i][j]);
+            }
+            cur.add(tmp);
+        }
+        do{
+            count=0;
+            int row = cur.size();
+            if(row==0){
+                break;
+            }
+            int col = cur.get(0).size();
+            if(col==0){
+                break;
+            }
+            for(int i=0;i<row-1;++i){
+                List<Integer> r1 = cur.get(i);
+                List<Integer> r2 = cur.get(i+1);
+                if(r1.get(1)>=r2.get(0)){
+                    Integer i1 = r1.get(0);
+                    Integer i2 = Math.max(r2.get(1),r1.get(1)); //不要漏掉情况 比如后面的区间完全在第一个区间内部
+                    List<Integer> l2 = new ArrayList<>();
+                    l2.add(i1);
+                    l2.add(i2);
+                    cur.remove(i);
+                    cur.remove(i);//后面元素前移
+                    cur.add(i,l2);
+                    count++;
+                    break;
+                }
+            }
+        }while(count!=0);
+        res = new int[cur.size()][2];
+        for(int i=0;i<cur.size();++i){
+            res[i][0] = cur.get(i).get(0);
+            res[i][1] = cur.get(i).get(1);
+        }
+        return res;
+    }
+}
+```
+
+# [62] 不同路径
+
+基本的动态规划。
+
+```
+class Solution {
+    public int uniquePaths(int m, int n) {
+        int[][] dp = new int[m][n]; //二维数组的创建方式
+        for(int i=0;i<m;++i){
+            for(int j=0;j<n;++j){
+                if(i==0|j==0){
+                    dp[i][j]=1;
+                }
+                else{
+                    dp[i][j] = dp[i-1][j]+dp[i][j-1];
+                }
+            }
+        }
+        return dp[m-1][n-1];
+    }
+}
+```
+
+# [64] 最小路径和
+
+也是一道常规动态规划题。
+
+```
+class Solution {
+    public int minPathSum(int[][] grid) {
+        int row = grid.length;
+        int col = grid[0].length;
+        int [][] dp = new int[row][col];
+        for(int i=0;i<row;++i){
+            for(int j=0;j<col;++j){
+                if(i==0|j==0){
+                    if(i==0&&j==0){
+                        dp[i][j]=grid[i][j];
+                    }
+                    else{
+                        if(i==0){
+                            dp[i][j] = dp[i][j-1]+grid[i][j];
+                        }
+                        else{
+                            dp[i][j] = dp[i-1][j]+grid[i][j];
+                        }
+                    }
+                }
+                else{
+                    dp[i][j] = Math.min(dp[i-1][j],dp[i][j-1])+grid[i][j];
+                }
+            }
+        }
+        return dp[row-1][col-1];
+    }
+}
+```
+
+# [70] 爬楼梯
+
+经典dp题,都是从简单问题开始考虑的。
+
+```
+
+class Solution {
+    public int climbStairs(int n) {
+        if(n<=2){
+            return n;
+        }
+        int [] dp = new int[n+1];
+        dp[0] = 0;
+        dp[1] = 1;
+        dp[2] = 2;
+        for(int i=3;i<=n;++i){
+            dp[i] = dp[i-1]+dp[i-2];
+        }
+        return dp[n];
+    }
+}
+
+```
