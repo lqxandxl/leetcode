@@ -1112,3 +1112,150 @@ class Solution {
 }
 
 ```
+
+# [75] 颜色分类
+
+数组排序问题，使用快排。
+
+```
+class Solution {
+    public void sortColors(int[] nums) {
+        quickSort(nums,0,nums.length-1);
+    }
+    public void quickSort(int[] nums,int begin,int end){ //需要死记硬背 需要先想起来快排的基本函数形式
+        if(begin>end){
+            return;
+        }
+        int low = begin;
+        int high = end;
+        int mid_value = nums[low];
+        while(low<high){
+            while(mid_value<=nums[high]&&low<high){ //不断进行筛选 把比mid大的值放右边，小的放左边
+                high--;
+            }
+            nums[low] = nums[high];
+
+            while(nums[low]<=mid_value&&low<high){
+                low++;
+            }
+            nums[high] = nums[low];
+        }
+        //low==high时退出循环
+        nums[low] = mid_value;
+        quickSort(nums,begin,low-1);
+        quickSort(nums,low+1,end);
+    }
+}
+```
+
+
+# [78] 子集
+经典回溯问题，心中有图，且利用模板即可。
+```
+class Solution {
+    public static List<List<Integer>> res;
+    public List<List<Integer>> subsets(int[] nums) {
+        res=new ArrayList<>();
+        dfs(nums,0,new ArrayList<>());
+        return res;
+    }
+    public void dfs(int[] nums,int start,ArrayList<Integer> path){
+        res.add((ArrayList<Integer>)path.clone());
+        for(int i=start;i<nums.length;++i){
+            path.add(nums[i]);
+            dfs(nums,i+1,path);
+            path.remove(path.size()-1);
+        }
+    }
+}
+```
+
+# [79] 单词搜索
+
+这道题从每一个矩阵的点开始出发，开始探索。
+
+坑的第一点就是，不能走回头路，不能重复，所以在dfs的时候要知道自己从哪里来以避免走回头路。
+
+坑的第二点就是，为了避免走到重复的点，需要记录自己走过了哪些点。
+
+坑的第三点就是，由于记录了走过哪些点，当尝试一条路失败以后，会破环现场环境，所以当这条路失败的时候应该还原现场，仿佛自己没走过。
+
+坑的第四点就是，传入的word字符串是引用，应该尽量避免不同尝试后对word的修改对结果产生不好的影响。简而言之就是注意传参。
+
+```
+class Solution {
+    public static int[][] record = null;
+    public boolean exist(char[][] board, String word) {
+        int row = board.length;
+        int col = board[0].length;
+        for(int i=0;i<row;++i){
+            for(int j=0;j<col;++j){
+                record = new int[row][col];
+                if(exist(board,i,j,word,0)){
+                    return true;
+                }
+            }
+        }        
+        return false;
+    }
+    public boolean exist(char[][] board,int x,int y,String word,int direct){
+        int row = board.length;
+        int col = board[0].length;
+        if(x<0||y<0||x>=row||y>=col){
+            return false;
+        }
+        if(word.length()==0){
+            return false;
+        }
+        if(record[x][y]==1){
+            return false; //have use it
+        }
+        //System.out.println(String.valueOf(x)+":"+String.valueOf(y));
+        if(word.length()>=1){
+            if(board[x][y] == word.charAt(0)){
+                record[x][y] = 1;
+                if(word.length()>1){
+                    //4 direction but no reback
+                    String new_word = null;
+                    boolean res;
+                    if(direct==0){
+                        new_word=word.substring(1);
+                        res = exist(board,x-1,y,new_word,1)|exist(board,x+1,y,new_word,2)
+                    |exist(board,x,y-1,new_word,3)|exist(board,x,y+1,new_word,4);
+                    }
+                    else if(direct==1){//from down
+                        new_word=word.substring(1);
+                        res = exist(board,x-1,y,new_word,1)
+                    |exist(board,x,y-1,new_word,3)|exist(board,x,y+1,new_word,4);
+                    }
+                    else if(direct==2){//from  up
+                        new_word=word.substring(1);
+                            res = exist(board,x+1,y,new_word,2)
+                        |exist(board,x,y-1,new_word,3)|exist(board,x,y+1,new_word,4);
+                    }
+                    else if(direct==3){//from right
+                        new_word=word.substring(1);
+                        res = exist(board,x-1,y,new_word,1)|exist(board,x+1,y,new_word,2)
+                    |exist(board,x,y-1,new_word,3);                       
+                    }
+                    else{
+                        new_word=word.substring(1);
+                        res = exist(board,x-1,y,new_word,1)|exist(board,x+1,y,new_word,2)
+                    |exist(board,x,y+1,new_word,4);
+                    }
+                    if(res==false){
+                        record[x][y] = 0;
+                    }
+                    return res;
+                }
+                return true;
+            }
+            else{
+                record[x][y]=0;
+                return false;
+            }
+        }
+        return false;
+    }
+}
+```
