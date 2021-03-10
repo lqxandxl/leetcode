@@ -1259,3 +1259,87 @@ class Solution {
     }
 }
 ```
+
+# [94] 二叉树的中序遍历
+
+dfs解决遍历问题。
+
+```
+class Solution {
+    public static List<Integer> _res;
+    public List<Integer> inorderTraversal(TreeNode root) {
+        _res = new ArrayList<>();
+        dfs(root);
+        return _res;
+    }
+    public void dfs(TreeNode root){
+        if(root==null){
+            return;
+        }
+        dfs(root.left);
+        _res.add(root.val);
+        dfs(root.right);
+    }
+}
+```
+
+# [96] 不同的二叉搜索树
+经典的dp问题，最终结果是由左子树和右子树形态的累加之和。
+
+递推公式见代码。
+
+```
+class Solution {
+    public int numTrees(int n) {
+        if(n<=1){
+            return n;
+        }
+        //dp[n] = dp[l] * dp[n-1-l] l=0...n-1
+        int[] dp = new int[n+1];
+        dp[0] = 0;
+        dp[1] = 1;
+        dp[2] = 2;
+        for(int i=3;i<=n;++i){
+            for(int j=0;j<=i-1;++j){
+                if(dp[j]==0|dp[i-1-j]==0){
+                    dp[i]+=dp[j]+dp[i-1-j];
+                }
+                else{
+                    dp[i]+=dp[j]*dp[i-1-j];
+                }
+            }
+        }
+        return dp[n];
+    }
+}
+```
+
+
+# [98] 验证二叉搜索树
+
+中序遍历即可。
+
+```
+class Solution {
+    public static ArrayList<Integer> _list;
+    public boolean isValidBST(TreeNode root) {
+        _list = new ArrayList<>();
+        dfs(root);
+        for(int i=1;i<_list.size();++i){
+            if(_list.get(i) <= _list.get(i-1)){
+                return false;
+            }
+        }
+        return true;
+    }
+    public void dfs(TreeNode root){
+        if(root==null){
+            return;
+        }
+        dfs(root.left);
+        int tmp = root.val;
+        _list.add(tmp);
+        dfs(root.right);
+    }
+}
+```
