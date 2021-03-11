@@ -1343,3 +1343,94 @@ class Solution {
     }
 }
 ```
+# [101] 对称二叉树
+
+同时从两侧进行遍历。
+
+```
+class Solution {
+    public boolean isSymmetric(TreeNode root) {
+        return dfs(root,root);
+    }
+    public boolean dfs(TreeNode t1,TreeNode t2){
+        if(t1==null & t2==null){
+            return true;
+        }
+        if(t1==null & t2!=null){
+            return false;
+        }
+        if(t1!=null & t2==null){
+            return false;
+        }
+        if(t1.val != t2.val){
+            return false;
+        }
+        boolean r1 = dfs(t1.left,t2.right);
+        boolean r2 = dfs(t1.right,t2.left);
+        if(r1==false | r2==false){
+            return false;
+        }
+        return true;
+    }
+}
+```
+# [102] 层序遍历
+
+层序遍历利用队列实现，但是队列java不像python可以灵活记录层数。如果队列只能放结点的话，
+需要知道当前的深度是什么。最常见的做法是从队列取结点一次性全部取出来一层的结点。一次性放入该层的全部结点。
+
+```
+class Solution {
+    public List<List<Integer>> levelOrder(TreeNode root) {
+        List<TreeNode> queue = new ArrayList<>();
+        List<List<Integer>> res = new ArrayList<>();
+        if(root==null){
+            return res;
+        }
+        queue.add(root);
+        while(queue.size()!=0){
+            List<Integer> tmpList = new ArrayList<>();
+            List<TreeNode> tmpNodes = new ArrayList<>();
+            for(int i=0;i<queue.size();++i){
+                TreeNode tmp = queue.get(i);
+                tmpList.add(tmp.val);
+                if(tmp.left!=null){
+                    tmpNodes.add(tmp.left);
+                }
+                if(tmp.right!=null){
+                    tmpNodes.add(tmp.right);
+                }
+            }
+            res.add(tmpList);
+            queue.clear();
+            for(TreeNode node:tmpNodes){ //一次性放入记录好的全部结点
+                queue.add(node); 
+            }
+        }
+        return res;
+    }
+}
+```
+
+# [104] 二叉树的最大深度
+```
+class Solution {
+    public static int _maxDepth;
+    public int maxDepth(TreeNode root) {
+        _maxDepth = 0;
+        dfs(root,1);
+        return _maxDepth;
+    }
+    public void dfs(TreeNode root,int depth){
+        if(root==null){
+            return;
+        }
+        if(_maxDepth<depth){
+            _maxDepth = depth;
+        }
+        dfs(root.left,depth+1);
+        dfs(root.right,depth+1);
+    }
+}
+```
+
