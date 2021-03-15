@@ -1434,3 +1434,174 @@ class Solution {
 }
 ```
 
+# [105] 先序和中序构造二叉树
+
+注意数组拆分的边界条件。
+使用递归方式将问题子问题化。
+利用原函数递归即可。
+人寿笔试遇到原题。
+
+```
+class Solution {
+    public TreeNode buildTree(int[] preorder, int[] inorder) {
+        if(preorder==null|inorder==null){
+            return null;
+        }
+        if(preorder.length == 0){
+            return null;
+        }
+        if(preorder.length == 1){
+            TreeNode res = new TreeNode(preorder[0]);
+            return res;
+        }
+        else{
+            int mid_value = preorder[0];
+            TreeNode res = new TreeNode(mid_value);
+            int index = -1;
+            for(int i=0;i<inorder.length;++i){
+                if(inorder[i] == mid_value){
+                    index = i;
+                }
+            }
+            if(index==-1){
+                return null;
+            }
+            int left_value = index;
+            int right_value = preorder.length - index - 1;
+            int[] preorder_left = new int[left_value];
+            int[] inorder_left = new int[left_value];
+            int[] preorder_right = new int[right_value];
+            int[] inorder_right = new int[right_value];
+            for(int i=0;i<left_value;++i){
+                preorder_left[i] = preorder[1+i];
+            }
+            for(int i=0;i<right_value;++i){
+                preorder_right[i] = preorder[1+left_value+i];
+            }
+            for(int i=0;i<left_value;++i){
+                inorder_left[i] = inorder[i];
+            }
+            for(int i=0;i<right_value;++i){
+                inorder_right[i] = inorder[1+left_value+i];
+            }
+            TreeNode tl = buildTree(preorder_left,inorder_left);
+            TreeNode tr = buildTree(preorder_right,inorder_right);
+            res.left = tl;
+            res.right = tr;
+            return res;
+        }
+    }
+}
+```
+
+# [114] 二叉树展开为链表
+
+按先序遍历遍历后记录下来，然后改变结点内的指针值。
+
+```
+class Solution {
+    public static List<TreeNode> _list = null;
+    public void flatten(TreeNode root) {
+        _list = new ArrayList<>();
+        dfs(root);
+        for(int i=1;i<_list.size();++i){
+            TreeNode t = _list.get(i);
+            TreeNode parent = _list.get(i-1);
+            parent.right = t;
+            parent.left = null;
+        }
+    }
+    public void dfs(TreeNode root){
+        if(root==null){
+            return;
+        }
+        _list.add(root);
+        dfs(root.left);
+        dfs(root.right);
+    }
+}
+```
+
+# [121] 买卖股票
+
+股票问题一般需要两个子问题来推导问题。
+
+两个子问题分别是上一轮持有股票 or 没持有股票。
+
+子问题的内容就是持有 or 没持有 所可能的最大值。
+
+该股票问题只买一次和卖一次，相对简单一些。
+
+```
+class Solution {
+    public int maxProfit(int[] prices) {
+        int size = prices.length;
+        int [] dp_have = new int[size];
+        int [] dp_nothave = new int[size];
+        dp_have[0] = -prices[0];
+        dp_nothave[0] = 0;
+        for(int i=1;i<size;++i){
+            dp_have[i] = Math.max(-prices[i],dp_have[i-1]);
+            dp_nothave[i] = Math.max(dp_have[i-1]+prices[i],dp_nothave[i-1]);
+        }
+        return Math.max(dp_have[size-1],dp_nothave[size-1]);
+    }
+}
+```
+
+# [136] 只出现一次的数字
+
+最初想的是hash办法，但如果要求不浪费空间怎么办。
+
+想法就是遍历穷举，看本次遍历到的数字在数组中有没有再次出现，算法复杂度是平方级别。
+
+而当对数组进行排序后，只需要看前后位置是不是和自己一样就行了。
+
+本题正好可以试试快排。
+
+```
+class Solution {
+    public int singleNumber(int[] nums) {
+        if(nums.length==1){
+            return nums[0];
+        }
+        quickSort(nums,0,nums.length-1);
+        for(int i=0;i<nums.length;++i){
+            if(i-1>=0){
+                if(nums[i]==nums[i-1]){
+                    continue;
+                }
+            }
+            if(i+1<nums.length){
+                if(nums[i]==nums[i+1]){
+                    continue;
+                }
+            }
+            return nums[i];
+        }
+        return nums[nums.length-1];
+    }
+    public void quickSort(int[] nums,int begin,int end){
+        if(begin>end){
+            return;
+        }
+        int left = begin;
+        int right = end;
+        int mid_value = nums[left];
+        while(left<right){
+            while(left<right && nums[right]>=mid_value){
+                right--;
+            }
+            nums[left] = nums[right];
+            while(left<right && nums[left]<=mid_value){
+                left++;
+            }
+            nums[right] = nums[left];
+        }
+        nums[left] = mid_value; //退出时left==right
+        quickSort(nums,begin,left-1);
+        quickSort(nums,left+1,end);
+        return;
+    }
+}
+```
