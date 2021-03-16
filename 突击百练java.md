@@ -1605,3 +1605,160 @@ class Solution {
     }
 }
 ```
+
+# [139] 单词拆分
+
+这道题不容易想，主要是因为单词匹配并不是说按照给出的wordDict的最长单词匹配然后不断删除单词在原字符串上就行了。
+
+因此考虑的情况是，分别匹配每个单词，删除这个单词的长度如果匹配的话，然后用更小的原单词进入下一个递归函数。
+
+但是会超时，所以需要剪枝，同样的单词不需要再次进入dfs重新来一遍，而是用map去存储中间结果。
+
+```
+class Solution {
+    public static HashMap<String,Boolean> _map;
+    public boolean wordBreak(String s, List<String> wordDict) {
+        _map = new HashMap<String,Boolean>();
+        return dfs(s,wordDict);
+    }
+
+    public boolean dfs(String s,List<String> wordDict){
+        int minSize = 0x7fffffff;
+        boolean res=false;
+        if(_map.containsKey(s)){
+            return _map.get(s);
+        }
+        for(String str : wordDict){
+            if(str.equals(s)){
+                _map.put(s,true);
+                return true;
+            }
+            if(str.length()<minSize){
+                minSize = str.length(); //求出最小值是因为原单词如果都不够长了直接返回false。
+            }
+        }
+        if(s.length()<minSize){
+            _map.put(s,false);
+            return false;
+        }
+        for(String str : wordDict){
+            if(str.length()<s.length()){
+                String front_s = s.substring(0,str.length());
+                if(front_s.equals(str)){ //如果前面有单词和字典中匹配
+                    if(s.substring(str.length()).length() < minSize){ //如果剩余单词的长度都不够了则直接找字典的下一个单词
+                        continue;
+                    }
+                    boolean tmp_r;
+                    String sub_str = s.substring(str.length()); //剩余单词 
+                    if(_map.containsKey(sub_str)){
+                        tmp_r = _map.get(sub_str);
+                        res=res|tmp_r; //原单词的剩余单词如果在字典中就不用dfs了 剪纸操作
+                        continue;
+                    }
+                    tmp_r =  dfs(sub_str,wordDict); //否则进入dfs
+                    res=res|tmp_r;
+                }
+                else{
+                }
+            }
+            else if(str.length()==s.length()){
+
+            }
+            else{
+            }
+        }
+        if(_map.containsKey(s)){
+            return _map.get(s);
+        }
+        _map.put(s,res);
+        return res;
+    }
+}
+```
+
+# [141] 环形链表
+快慢指针。
+
+```
+public class Solution {
+    public boolean hasCycle(ListNode head) {
+        ListNode slow = head;
+        ListNode fast = head;
+        while(slow!=null && fast!=null){
+            fast = getNextFast(fast);
+            slow = getNext(slow);
+            if(fast==slow && fast!=null){ //防止只有一个结点的情况
+                return true;
+            }
+        }
+        return false;
+    }
+    public ListNode getNext (ListNode root){
+        if(root==null){
+            return null;
+        }
+        return root.next;
+    }
+    public ListNode getNextFast (ListNode root){
+        if(root==null){
+            return null;
+        }
+        root=root.next;
+        if(root==null){
+            return null;
+        }
+        return root.next;
+    }    
+}
+```
+
+# [142] 环形链表II
+
+找环的入口，当快慢指针相遇后，快指针从头变成慢指针，然后和慢指针一起向前。
+
+```
+public class Solution {
+    public ListNode detectCycle(ListNode head) {
+        ListNode slow = head;
+        ListNode fast = head;
+        boolean cycle = false;
+        while(fast!=null && slow!=null){
+            fast = getNextFast(fast);
+            slow = getNext(slow);
+            if(fast==slow && fast!=null){
+                cycle = true;
+                break;
+            }
+        }
+        if(cycle == false){
+            return null;
+        }
+        fast = head;
+        while(fast!=slow){
+            fast = getNext(fast);
+            slow = getNext(slow);
+        }
+        return fast;
+    }
+
+    public ListNode getNext (ListNode root){
+        if(root==null){
+            return null;
+        }
+        return root.next;
+    }
+    public ListNode getNextFast (ListNode root){
+        if(root==null){
+            return null;
+        }
+        root=root.next;
+        if(root==null){
+            return null;
+        }
+        return root.next;
+    }    
+}
+
+
+```
+
